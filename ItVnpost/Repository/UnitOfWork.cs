@@ -3,6 +3,7 @@ using ItVnpost.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ItVnpost.Repository;
 
 namespace ItVnpost.DataAccess.Data.Repository
 {
