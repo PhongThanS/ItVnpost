@@ -38,8 +38,8 @@ namespace ItVnpost.Controllers.V2
         ///     khi chọn các option thì phải có dữ liệu cho numberTake
         /// </remarks>
         /// <returns></returns>
-        [HttpGet("{menuId}")]
-        public IActionResult Get(int menuId,
+        [HttpGet]
+        public IActionResult Gets([FromQuery]int menuId,
             [FromQuery] bool latestArticles = false, [FromQuery] bool mostViewArticle = false,
             [FromQuery] int numberSkip = 0, [FromQuery] int numberTake = 0)
         {
@@ -89,6 +89,18 @@ namespace ItVnpost.Controllers.V2
                     return BadRequest(news);
                 }
             }
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult Get(int id)
+        {
+            var obj = _unitOfWork.News.Get(id);
+            if (obj == null)
+            {
+                return NotFound();
+            }
+            var objDto = _mapper.Map<NewsDto>(obj);
+            return Ok(objDto);
         }
     }
 }
