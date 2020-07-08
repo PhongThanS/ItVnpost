@@ -34,37 +34,32 @@ namespace ItVnpost.Controllers.V1
             {
                 return Ok(_signInManager.IsSignedIn(User));
             }
-            return Ok();
+            else
+            {
+                return Ok(User);
+            }
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        [HttpPost]
-        public IActionResult Post()
+        [HttpOptions]
+        public async Task<IActionResult> Post([FromQuery] string username = "", [FromQuery] string password = "", [FromQuery] bool rememberMe = true)
         {
-            return Ok(new { success = true, message = "Update Successful" });
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        [HttpPut]
-        public IActionResult Push()
-        {
-            return Ok(new { success = true, message = "Update Successful" });
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        [HttpDelete]
-        public IActionResult Delete()
-        {
-            return Ok(new { success = true, message = "Update Successful" });
+            if (username == "" || password == "")
+            {
+                return Ok(new { success = false, message = "Tài khoản hoặc mật khẩu không được để trống" });
+            }
+            var result = await _signInManager.PasswordSignInAsync(username, password, rememberMe, false);
+            if (result.Succeeded)
+            {
+                return Ok(new { success = true, message = "Đăng nhập thành công" });
+            }
+            else
+            {
+                return Ok(new { success = false, message = "Đăng nhập thất bại" });
+            }
         }
     }
 }

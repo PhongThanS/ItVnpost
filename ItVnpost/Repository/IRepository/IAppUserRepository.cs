@@ -5,7 +5,10 @@ using System.Text;
 
 namespace ItVnpost.Repository.IRepository
 {
-    public interface IAppUserRepository: IRepository<AppUser>
+    public interface IAppUserRepository : IRepository<AppUser>
     {
+        bool IsUniqueUser(string username);
+        AppUser Authenticate(string username, string password);
+        AppUser Register(string username, string password);
     }
 }

@@ -1,10 +1,13 @@
+using System.Text;
 using AutoMapper;
 using ItVnpost.DataAccess.Data;
 using ItVnpost.DataAccess.Data.Repository;
 using ItVnpost.Models;
 using ItVnpost.Models.Mapper;
 using ItVnpost.Repository.IRepository;
+using ItVnpost.Utility.App;
 using ItVnpost.Utility.Startup;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace ItVnpost
@@ -53,8 +57,32 @@ namespace ItVnpost
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddAutoMapper(typeof(VnpostMappings));
-            //Swagger.AddSwagger(services);
             Version.AddVersion(services);
+            var appSettingsSection = Configuration.GetSection("AppSettings");
+
+            services.Configure<AppSettings>(appSettingsSection);
+
+            var appSettings = appSettingsSection.Get<AppSettings>();
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(x =>
+                {
+                    x.RequireHttpsMetadata = false;
+                    x.SaveToken = true;
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                    };
+                });
+
             services.AddControllers();
         }
 
@@ -67,11 +95,12 @@ namespace ItVnpost
             }
 
             app.UseHttpsRedirection();
-            //Swagger.UseSwagger(app);
             Version.UseVersion(app, provider);
             app.UseRouting();
 
             app.UseCors(AppCors);
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

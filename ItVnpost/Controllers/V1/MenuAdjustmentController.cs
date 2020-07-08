@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using AutoMapper;
 using ItVnpost.Models;
 using ItVnpost.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,6 +32,17 @@ namespace ItVnpost.Controllers.V1
                 keyValuePairs.Add(menuAdjustment.Property, menuAdjustment.Value);
             }
             return Ok(keyValuePairs);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public IActionResult Post()
+        {
+            return Ok();
         }
     }
 }
