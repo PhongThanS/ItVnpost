@@ -31,7 +31,7 @@ namespace ItVnpost.Models.Dtos
         {
             get
             {
-                return DateCreated.ToString("dd/MM/yy");
+                return DateCreated.ToString("dd/MM/yyyy");
             }
         }
         //public Guid? UserIdModified { get; set; }
