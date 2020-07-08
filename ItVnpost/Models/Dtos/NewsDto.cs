@@ -13,6 +13,13 @@ namespace ItVnpost.Models.Dtos
         public string Name { get; set; }
         //Mô tả bản ghi
         public string Title { get; set; }
+        public string SoftTitle
+        {
+            get
+            {
+                return Title == null ? "" : (Title.Length > 100 ? (Title.Substring(0, 80) + "...") : Title);
+            }
+        }
         public string Image { get; set; }
         //[DataType(DataType.MultilineText)]
         //public string Detail { get; set; }
