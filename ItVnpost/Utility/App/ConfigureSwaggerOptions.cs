@@ -2,6 +2,10 @@
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
+using System.IO;
+using System;
+using Microsoft.OpenApi.Models;
 
 namespace ItVnpost.Utility.App
 {
@@ -22,6 +26,15 @@ namespace ItVnpost.Utility.App
                         Version = desc.ApiVersion.ToString(),
                     });
             }
+
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Description = "Need translate",
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer"
+            });
         }
     }
 }
