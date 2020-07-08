@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using ItVnpost.Models;
 using ItVnpost.Models.Dtos;
@@ -38,26 +39,55 @@ namespace ItVnpost.Controllers.V2
         /// </remarks>
         /// <returns></returns>
         [HttpGet("{menuId}")]
-        public IActionResult Get(int menuId, [FromQuery] bool latestArticles = false, [FromQuery] bool mostViewArticle = false,
+        public IActionResult Get(int menuId,
+            [FromQuery] bool latestArticles = false, [FromQuery] bool mostViewArticle = false,
             [FromQuery] int numberSkip = 0, [FromQuery] int numberTake = 0)
         {
+            List<NewsDto> news = new List<NewsDto>();
             if (latestArticles)
             {
-                return Ok(_unitOfWork.News.GetAll(
-                    filter: x => x.IsHidden == false && x.MenuId == menuId,
-                    orderBy: x => x.OrderByDescending(x => x.DateCreated)).Skip(numberSkip).Take(numberTake).Select(n => _mapper.Map<NewsDto>(n)).ToList());
+                try
+                {
+                    return Ok(_unitOfWork.News.GetAll(
+                        filter: x => x.IsHidden == false && x.MenuId == menuId,
+                        orderBy: x => x.OrderByDescending(x => x.DateCreated)).Skip(numberSkip).Take(numberTake).Select(n => _mapper.Map<NewsDto>(n)).ToList());
+                }
+                catch
+                {
+                    return BadRequest(news);
+                }
             }
             else if (mostViewArticle)
             {
-                return Ok(_unitOfWork.News.GetAll(
-                    filter: x => x.IsHidden == false && x.MenuId == menuId,
-                    orderBy: x => x.OrderByDescending(x => x.ViewCount)).Skip(numberSkip).Take(numberTake).Select(n => _mapper.Map<NewsDto>(n)).ToList());
+                try
+                {
+                    return Ok(_unitOfWork.News.GetAll(
+                        filter: x => x.IsHidden == false && x.MenuId == menuId,
+                        orderBy: x => x.OrderByDescending(x => x.ViewCount)).Skip(numberSkip).Take(numberTake).Select(n => _mapper.Map<NewsDto>(n)).ToList());
+                }
+                catch
+                {
+                    return BadRequest(news);
+                }
             }
             else
             {
-                return Ok(_unitOfWork.News.GetAll(
-                       filter: x => x.IsHidden == false && x.MenuId == menuId,
-                       orderBy: x => x.OrderByDescending(x => x.DateCreated)).Select(n => _mapper.Map<NewsDto>(n)).ToList());
+                try
+                {
+                    news = _unitOfWork.News.GetAll(
+                           filter: x => x.IsHidden == false && x.MenuId == menuId,
+                           orderBy: x => x.OrderByDescending(x => x.DateCreated)).Select(n => _mapper.Map<NewsDto>(n)).ToList();
+
+                    for (int i = 0; i < news.Count; i++)
+                    {
+                        news[i].Size = (i == 4 || i == 5 || i == 12 || i == 13) ? 8 : 4;
+                    }
+                    return Ok(news);
+                }
+                catch
+                {
+                    return BadRequest(news);
+                }
             }
         }
     }

@@ -26,5 +26,7 @@ namespace ItVnpost.Models.Dtos
                 return DateCreated.ToString("dd/MM/yyyy");
             }
         }
+
+        public int Size { get; set; }
     }
 }
