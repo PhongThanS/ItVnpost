@@ -19,7 +19,7 @@ namespace ItVnpost.Models.Dtos
         //public string Author { get; set; }
         //public int ViewCount { get; set; }
         //public Guid? UserIdCreated { get; set; }
-        //public DateTime DateCreated { get; set; }
+        public DateTime DateCreated { get; set; }
         //public Guid? UserIdModified { get; set; }
         //public DateTime? DateModified { get; set; }
         //public string Alias { get; set; }
