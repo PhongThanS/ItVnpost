@@ -23,14 +23,38 @@ namespace ItVnpost.Controllers.V2
         }
 
         /// <summary>
-        /// Lấy tất cả dữ liệu của phần news 1
+        /// Lấy dữ liệu của phần news 1
         /// </summary>
-        /// <param name="id">Đưa vào id của danh mục</param>
+        /// <param name="menuId">Đưa vào id của 1 menu</param>
+        /// <param name="getTop1">Lấy bài viết mới nhất</param>
+        /// <param name="getTop3AfterTop1">Lấy 3 bài viết mới nhất sau bài số 1</param>
+        /// <param name="getAll">Lấy tất cả bài viết</param>
         /// <returns></returns>
-        [HttpGet]
-        public IActionResult Get(int id)
+        [HttpGet("{menuId}")]
+        public IActionResult Get(int menuId, [FromQuery] bool getTop1, [FromQuery] bool getTop3AfterTop1, [FromQuery] bool getAll)
         {
-            return Ok(_unitOfWork.News.GetAll(x => x.IsHidden == false && x.MenuId == id).OrderByDescending(x => x.ViewCount).Take(4).Select(n => _mapper.Map<NewsDto>(n)).ToList());
+            if (getTop1)
+            {
+                return Ok(_unitOfWork.News.GetAll(
+                    filter: x => x.IsHidden == false && x.MenuId == menuId,
+                    orderBy: x => x.OrderByDescending(x => x.DateCreated)).Take(1).Select(n => _mapper.Map<NewsDto>(n)).ToList());
+            }
+            else if (getTop3AfterTop1)
+            {
+                return Ok(_unitOfWork.News.GetAll(
+                       filter: x => x.IsHidden == false && x.MenuId == menuId,
+                       orderBy: x => x.OrderByDescending(x => x.DateCreated)).Skip(1).Take(3).Select(n => _mapper.Map<NewsDto>(n)).ToList());
+            }
+            else if (getAll)
+            {
+                return Ok(_unitOfWork.News.GetAll(
+                       filter: x => x.IsHidden == false && x.MenuId == menuId,
+                       orderBy: x => x.OrderByDescending(x => x.DateCreated)).Select(n => _mapper.Map<NewsDto>(n)).ToList());
+            }
+            else
+            {
+                return BadRequest(new { message = "Các option không được để trống" });
+            }
         }
     }
 }
