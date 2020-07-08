@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using ItVnpost.Models;
 using ItVnpost.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -13,9 +14,10 @@ namespace ItVnpost.Controllers.V1
 {
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("1.0")]
+    [Authorize]
     //[Route("api/[controller]")]
+    //[ApiExplorerSettings(GroupName = "User")]
     [ApiController]
-    [ApiExplorerSettings(GroupName = "User")]
     public class UserController : BaseController
     {
         public UserController(IUnitOfWork unitOfWork, IMapper mapper, SignInManager<AppUser> signInManager) : base(unitOfWork, mapper, signInManager)
@@ -27,6 +29,7 @@ namespace ItVnpost.Controllers.V1
         /// </summary>
         /// <param name="checkSignIn">Kiểm tra người dùng có đăng nhập</param>
         /// <returns></returns>
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult Get([FromQuery] bool checkSignIn)
         {
@@ -44,22 +47,21 @@ namespace ItVnpost.Controllers.V1
         /// 
         /// </summary>
         /// <returns></returns>
+        [AllowAnonymous]
         [HttpOptions]
-        public async Task<IActionResult> Post([FromQuery] string username = "", [FromQuery] string password = "", [FromQuery] bool rememberMe = true)
+        public IActionResult Post([FromQuery] string username = "", [FromQuery] string password = "", [FromQuery] bool rememberMe = true)
         {
             if (username == "" || password == "")
             {
-                return Ok(new { success = false, message = "Tài khoản hoặc mật khẩu không được để trống" });
+                return BadRequest(new { success = false, message = "Tài khoản hoặc mật khẩu không được để trống" });
             }
-            var result = await _signInManager.PasswordSignInAsync(username, password, rememberMe, false);
-            if (result.Succeeded)
+            AppUser user = _unitOfWork.AppUser.Authenticate(username, password);
+
+            if (user == null)
             {
-                return Ok(new { success = true, message = "Đăng nhập thành công" });
+                return BadRequest(new { success = false, message = "Tài khoản hoặc mật khẩu không đúng" });
             }
-            else
-            {
-                return Ok(new { success = false, message = "Đăng nhập thất bại" });
-            }
+            return Ok(new { success = true, message = user });
         }
     }
 }

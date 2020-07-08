@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using ItVnpost.Repository;
+using Microsoft.Extensions.Options;
+using ItVnpost.Utility.App;
 
 namespace ItVnpost.DataAccess.Data.Repository
 {
@@ -44,7 +46,7 @@ namespace ItVnpost.DataAccess.Data.Repository
         public IAppUserRepository AppUser { get; private set; }
         public IColorPageRepository ColorPage { get; private set; }
 
-        public UnitOfWork(ApplicationDbContext db)
+        public UnitOfWork(ApplicationDbContext db, IOptions<AppSettings> appSettings)
         {
             _db = db;
 
@@ -56,7 +58,7 @@ namespace ItVnpost.DataAccess.Data.Repository
             HomePage = new HomePageRepository(_db);
 
             Project = new ProjectRepository(_db);
-            ProjectCategory = new ProjectCategoryRepository(_db); 
+            ProjectCategory = new ProjectCategoryRepository(_db);
 
             CultureLayout = new CultureLayoutRepository(_db);
             CultureSection = new CultureSectionRepository(_db);
@@ -80,7 +82,7 @@ namespace ItVnpost.DataAccess.Data.Repository
             VisionMission = new VisionMissionRepository(_db);
             Footer = new FooterRepository(_db);
             FooterAdjustment = new FooterAdjustmentRepository(_db);
-            AppUser = new AppUserRepository(_db);
+            AppUser = new AppUserRepository(_db, appSettings);
             NewsCategory = new NewsCategoryRepository(_db);
             ColorPage = new ColorPageRepository(_db);
         }

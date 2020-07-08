@@ -34,7 +34,7 @@ namespace ItVnpost.Repository
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
             var tokenDescription = new SecurityTokenDescriptor
             {
-                Subject = new System.Security.Claims.ClaimsIdentity(new Claim[]
+                Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.Name, user.ToString())
                 }),
@@ -43,6 +43,7 @@ namespace ItVnpost.Repository
                 (new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescription);
+            user.Token = tokenHandler.WriteToken(token);
 
             return user;
         }
