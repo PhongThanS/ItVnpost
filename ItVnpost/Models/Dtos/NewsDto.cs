@@ -20,6 +20,13 @@ namespace ItVnpost.Models.Dtos
         //public int ViewCount { get; set; }
         //public Guid? UserIdCreated { get; set; }
         public DateTime DateCreated { get; set; }
+        public string DateDMY
+        {
+            get
+            {
+                return DateCreated.ToString("dd/MM/yy");
+            }
+        }
         //public Guid? UserIdModified { get; set; }
         //public DateTime? DateModified { get; set; }
         //public string Alias { get; set; }

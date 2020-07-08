@@ -24,7 +24,7 @@ namespace ItVnpost
 {
     public class Startup
     {
-        readonly string AcceptRoute = "http://10.141.23.108:5500";
+        readonly string AcceptRoute = "*";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
