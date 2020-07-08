@@ -39,11 +39,7 @@ namespace ItVnpost.Controllers.V2
         /// </remarks>
         /// <returns></returns>
         [HttpGet]
-<<<<<<< HEAD
-        public IActionResult Gets([FromQuery]int menuId,
-=======
         public IActionResult Get([FromQuery] int menuId,
->>>>>>> e342f13b9a8e7b3b94920d63df104573ad42b67e
             [FromQuery] bool latestArticles = false, [FromQuery] bool mostViewArticle = false,
             [FromQuery] int numberSkip = 0, [FromQuery] int numberTake = 0)
         {
@@ -98,7 +94,6 @@ namespace ItVnpost.Controllers.V2
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-<<<<<<< HEAD
             var obj = _unitOfWork.News.Get(id);
             if (obj == null)
             {
@@ -106,9 +101,6 @@ namespace ItVnpost.Controllers.V2
             }
             var objDto = _mapper.Map<NewsDto>(obj);
             return Ok(objDto);
-=======
-            return Ok(_unitOfWork.News.Get(id));
->>>>>>> e342f13b9a8e7b3b94920d63df104573ad42b67e
         }
     }
 }
