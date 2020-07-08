@@ -25,27 +25,7 @@ namespace ItVnpost.Repository
 
         public AppUser Authenticate(string username, string password)
         {
-            var user = _db.Users.SingleOrDefault(x => x.UserName == username && x.PasswordHash == password);
-            if (user == null)
-            {
-                return null;
-            }
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            var tokenDescription = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, user.ToString())
-                }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials
-                (new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescription);
-            user.Token = tokenHandler.WriteToken(token);
-
-            return user;
+            throw new NotImplementedException();
         }
 
         public bool IsUniqueUser(string username)

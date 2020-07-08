@@ -28,8 +28,7 @@ namespace ItVnpost.Controllers.V1
         {
             return Ok(_unitOfWork.Menu.GetAll(
                 filter: m => m.IsHidden == false && m.IsDisplayHome == true,
-                orderBy: x => x.OrderBy(me => me.OrderPosition))
-                .Select(m=>_mapper.Map<MenuDto>(m)).ToList());
+                orderBy: x => x.OrderBy(me => me.OrderPosition)).ToList());
         }
 
     }

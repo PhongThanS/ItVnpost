@@ -23,37 +23,41 @@ namespace ItVnpost.Controllers.V2
         }
 
         /// <summary>
-        /// Lấy dữ liệu của phần news 1
+        /// Lấy các bài báo
         /// </summary>
-        /// <param name="menuId">Đưa vào id của 1 menu</param>
-        /// <param name="getTop1">Lấy bài viết mới nhất</param>
-        /// <param name="getTop3AfterTop1">Lấy 3 bài viết mới nhất sau bài số 1</param>
-        /// <param name="getAll">Lấy tất cả bài viết</param>
+        /// <param name="menuId">Đưa vào menu Id của 1 loại tin tức, đây là phần bắt buộc phải có để xác định kiểu hiển thị</param>
+        /// <param name="latestArticles">Option lấy theo top những bài báo mới nhất</param>
+        /// <param name="mostViewArticle">Option lấy theo top những bài báo nhiều view nhất</param>
+        /// <param name="numberSkip">Số lượng bài báo được lấy đầu tiên sẽ bỏ qua</param>
+        /// <param name="numberTake">Sô lượng bài báo lấy</param>
+        /// <remarks>
+        /// Chú ý:
+        /// 
+        ///     Nếu không có option nào, sẽ lấy ra tất cả các bài báo
+        ///     khi chọn các option thì phải có dữ liệu cho numberTake
+        /// </remarks>
         /// <returns></returns>
         [HttpGet("{menuId}")]
-        public IActionResult Get(int menuId, [FromQuery] bool getTop1, [FromQuery] bool getTop3AfterTop1, [FromQuery] bool getAll)
+        public IActionResult Get(int menuId, [FromQuery] bool latestArticles = false, [FromQuery] bool mostViewArticle = false,
+            [FromQuery] int numberSkip = 0, [FromQuery] int numberTake = 0)
         {
-            if (getTop1)
+            if (latestArticles)
             {
                 return Ok(_unitOfWork.News.GetAll(
                     filter: x => x.IsHidden == false && x.MenuId == menuId,
-                    orderBy: x => x.OrderByDescending(x => x.DateCreated)).Take(1).Select(n => _mapper.Map<NewsDto>(n)).ToList());
+                    orderBy: x => x.OrderByDescending(x => x.DateCreated)).Skip(numberSkip).Take(numberTake).Select(n => _mapper.Map<NewsDto>(n)).ToList());
             }
-            else if (getTop3AfterTop1)
+            else if (mostViewArticle)
             {
                 return Ok(_unitOfWork.News.GetAll(
-                       filter: x => x.IsHidden == false && x.MenuId == menuId,
-                       orderBy: x => x.OrderByDescending(x => x.DateCreated)).Skip(1).Take(3).Select(n => _mapper.Map<NewsDto>(n)).ToList());
+                    filter: x => x.IsHidden == false && x.MenuId == menuId,
+                    orderBy: x => x.OrderByDescending(x => x.ViewCount)).Skip(numberSkip).Take(numberTake).Select(n => _mapper.Map<NewsDto>(n)).ToList());
             }
-            else if (getAll)
+            else
             {
                 return Ok(_unitOfWork.News.GetAll(
                        filter: x => x.IsHidden == false && x.MenuId == menuId,
                        orderBy: x => x.OrderByDescending(x => x.DateCreated)).Select(n => _mapper.Map<NewsDto>(n)).ToList());
-            }
-            else
-            {
-                return BadRequest(new { message = "Các option không được để trống" });
             }
         }
     }

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using ItVnpost.Models;
+using ItVnpost.Models.Dtos;
 using ItVnpost.Repository.IRepository;
 using ItVnpost.Utility.App;
 using Microsoft.AspNetCore.Identity;
@@ -79,7 +80,7 @@ namespace ItVnpost.Controllers.V1
                     };
                     var token = tokenHandler.CreateToken(tokenDescription);
                     user.Token = tokenHandler.WriteToken(token);
-                    return Ok(new { success = true, message = "Đăng nhập thành công", appuser = user });
+                    return Ok(new { success = true, message = "Đăng nhập thành công", appuser = _mapper.Map<AppUserDto>(user) });
                 }
                 catch
                 {
