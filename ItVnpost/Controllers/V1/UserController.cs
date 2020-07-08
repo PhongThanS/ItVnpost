@@ -53,7 +53,7 @@ namespace ItVnpost.Controllers.V1
         /// </summary>
         /// <returns></returns>
         [HttpOptions]
-        public async Task<IActionResult> Post([FromQuery] string username = "", [FromQuery] string password = "", [FromQuery] bool rememberMe = true)
+        public async Task<IActionResult> Option([FromQuery] string username = "", [FromQuery] string password = "", [FromQuery] bool rememberMe = true)
         {
             if (username == "" || password == "")
             {
@@ -71,7 +71,7 @@ namespace ItVnpost.Controllers.V1
                     {
                         Subject = new ClaimsIdentity(new Claim[]
                         {
-                    new Claim(ClaimTypes.Name, user.ToString())
+                    new Claim(ClaimTypes.Name, user.Id.ToString())
                         }),
                         Expires = DateTime.UtcNow.AddDays(7),
                         SigningCredentials = new SigningCredentials
