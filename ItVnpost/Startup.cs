@@ -24,7 +24,6 @@ namespace ItVnpost
 {
     public class Startup
     {
-        readonly string AppCors = "";
         readonly string AcceptRoute = "http://10.141.23.108:5500";
         public Startup(IConfiguration configuration)
         {
@@ -41,11 +40,11 @@ namespace ItVnpost
                     Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
             services.AddCors(options =>
             {
-                options.AddPolicy(name: AppCors,
-                                  builder =>
-                                  {
-                                      builder.WithOrigins(AcceptRoute);
-                                  });
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                        builder.WithOrigins(AcceptRoute);
+                    });
             });
             services.AddIdentity<AppUser, AppRole>(options =>
             {
@@ -98,7 +97,7 @@ namespace ItVnpost
             Version.UseVersion(app, provider);
             app.UseRouting();
 
-            app.UseCors(AppCors);
+            app.UseCors();
 
             app.UseAuthentication();
 

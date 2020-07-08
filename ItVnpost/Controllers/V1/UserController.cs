@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using ItVnpost.Models;
@@ -10,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ItVnpost.Controllers.V1
 {
@@ -20,8 +24,10 @@ namespace ItVnpost.Controllers.V1
     [ApiExplorerSettings(GroupName = "User")]
     public class UserController : BaseController
     {
+        private readonly AppSettings _appSettings;
         public UserController(IUnitOfWork unitOfWork, IMapper mapper, SignInManager<AppUser> signInManager, IOptions<AppSettings> appSettings) : base(unitOfWork, mapper, signInManager)
         {
+            _appSettings = appSettings.Value;
         }
 
         /// <summary>
@@ -51,16 +57,38 @@ namespace ItVnpost.Controllers.V1
         {
             if (username == "" || password == "")
             {
-                return Ok(new { success = false, message = "Tài khoản hoặc mật khẩu không được để trống" });
+                return BadRequest(new { success = false, message = "Tài khoản hoặc mật khẩu không được để trống" });
             }
             var result = await _signInManager.PasswordSignInAsync(username, password, rememberMe, false);
             if (result.Succeeded)
             {
-                return Ok(new { success = true, message = "Đăng nhập thành công" });
+                try
+                {
+                    AppUser user = _unitOfWork.AppUser.GetAll(filter: u => u.UserName == username).ToList()[0];
+                    var tokenHandler = new JwtSecurityTokenHandler();
+                    var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+                    var tokenDescription = new SecurityTokenDescriptor
+                    {
+                        Subject = new ClaimsIdentity(new Claim[]
+                        {
+                    new Claim(ClaimTypes.Name, user.ToString())
+                        }),
+                        Expires = DateTime.UtcNow.AddDays(7),
+                        SigningCredentials = new SigningCredentials
+                        (new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                    };
+                    var token = tokenHandler.CreateToken(tokenDescription);
+                    user.Token = tokenHandler.WriteToken(token);
+                    return Ok(new { success = true, message = "Đăng nhập thành công", appuser = user });
+                }
+                catch
+                {
+                    return Ok(new { success = false, message = "Đã có lỗi trong server" });
+                }
             }
             else
             {
-                return Ok(new { success = false, message = "Đăng nhập thất bại" });
+                return BadRequest(new { success = false, message = "Đăng nhập thất bại" });
             }
         }
     }
