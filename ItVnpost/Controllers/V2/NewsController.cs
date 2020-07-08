@@ -29,7 +29,7 @@ namespace ItVnpost.Controllers.V2
         /// <param name="latestArticles">Option lấy theo top những bài báo mới nhất</param>
         /// <param name="mostViewArticle">Option lấy theo top những bài báo nhiều view nhất</param>
         /// <param name="numberSkip">Số lượng bài báo được lấy đầu tiên sẽ bỏ qua</param>
-        /// <param name="numberTake">Sô lượng bài báo lấy</param>
+        /// <param name="numberTake">Số lượng bài báo lấy</param>
         /// <remarks>
         /// Chú ý:
         /// 

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 using ItVnpost.Utility.App;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +23,12 @@ namespace ItVnpost.Utility.Startup
             });
             services.AddVersionedApiExplorer(option => option.GroupNameFormat = "'v'VVV");
             services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(option =>
+            {
+                var xmlCommenntFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var cmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommenntFile);
+                option.IncludeXmlComments(cmlCommentsFullPath);
+            });
         }
 
         public static void UseVersion(IApplicationBuilder app, IApiVersionDescriptionProvider provider)
